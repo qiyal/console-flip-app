@@ -95,12 +95,24 @@ public class ProductDatabase {
 
     public void decrementQuantity(Product product) {
         if (product instanceof Book) {
-            Book book = ((Book)product);
-            book.setPrice(book.getPrice() - 1);
+            Book book = (Book)product;
+            book.setQuantity(book.getQuantity() - 1);
             books.put(book.getBookId(), book);
         } else {
             Comics comics = ((Comics)product);
-            comics.setPrice(comics.getPrice() - 1);
+            comics.setQuantity(comics.getQuantity() - 1);
+            books.put(comics.getComicsId(), comics);
+        }
+    }
+
+    public void incrementQuantity(Product product) {
+        if (product instanceof Book) {
+            Book book = (Book)product;
+            book.setQuantity(book.getQuantity() + 1);
+            books.put(book.getBookId(), book);
+        } else {
+            Comics comics = ((Comics)product);
+            comics.setQuantity(comics.getQuantity() + 1);
             books.put(comics.getComicsId(), comics);
         }
     }

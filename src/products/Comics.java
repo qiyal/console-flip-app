@@ -94,6 +94,7 @@ public class Comics implements Product {
         this.publisher = publisher;
     }
 
+    @Override
     public int getQuantity() {
         return quantity;
     }

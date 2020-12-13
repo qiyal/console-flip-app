@@ -18,4 +18,9 @@ public class Leaf implements Component {
     public boolean isComposite() {
         return false;
     }
+
+    @Override
+    public void show() {
+        System.out.println(product.showDetails());
+    }
 }

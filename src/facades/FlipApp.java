@@ -6,6 +6,11 @@ import databases.UserDatabase;
 import products.Product;
 import services.AuthService;
 import services.Role;
+import strategies.PayByCash;
+import strategies.PayByCreditCard;
+import strategies.PayByInstalments;
+import strategies.PayStrategy;
+import users.Client;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -45,6 +50,8 @@ public class FlipApp {
                 } else {
                     System.out.println("\nenter 1 - add a product to Cart");
                     System.out.println("enter 2 - remove a product from the Cart");
+                    System.out.println("enter 3 - show Cart");
+                    System.out.println("enter 4 - place your order");
                     System.out.println("enter 0 - EXIT");
                     System.out.print("enter: ");
                     op = sc.nextInt();
@@ -52,9 +59,14 @@ public class FlipApp {
                     if (op == 1) {
                         actionAddToCart();
                     } else if (op == 2) {
-
+                        actionRemoveItem();
+                    } else if (op == 3) {
+                        cart.show();
+                    } else if (op == 4) {
+                        pay();
                     } else if (op == 0) {
                         showExitMessage();
+                        break;
                     } else {
                         showErrorInvalidArgument();
                     }
@@ -77,6 +89,52 @@ public class FlipApp {
                     showErrorInvalidArgument();
                 }
 
+            }
+        }
+    }
+
+    private void pay() {
+        if (cart.getSize() != 0) {
+            System.out.println("\nChose payment method:\nenter 1 --- Cash\nenter 2 --- Credit Card\nenter 3 -- Take installment");
+            System.out.print("enter: ");
+            op = sc.nextInt();
+
+            PayStrategy payStrategy;
+
+            if (op == 1) {
+                payStrategy = new PayByCash();
+            } else if (op == 2){
+                payStrategy = new PayByCreditCard();
+            } else {
+                payStrategy = new PayByInstalments();
+            }
+
+            Client client = (Client) userDatabase.getUserByLogin(authService.getAuthUserLogin());
+            int cost = cart.getTotalCost();
+
+            payStrategy.collectPaymentDetails(cost, client);
+
+            if (payStrategy.pay()) {
+                cart.clear();
+                System.out.println("\nPayment has been successful.");
+            } else {
+                System.out.println("\nFAIL! Please, check your data.");
+            }
+        } else {
+            System.out.println("\nCart is empty!");
+        }
+    }
+
+    private void actionRemoveItem() {
+        if (cart.getSize() == 0) {
+            System.out.println("\nCart is empty!");
+        } else {
+            cart.show();
+            System.out.print("enter: ");
+            chose = sc.nextInt();
+
+            if (chose > -1 && chose < cart.getSize()) {
+                cart.removeProduct(chose);
             }
         }
     }
@@ -128,7 +186,12 @@ public class FlipApp {
 
         String str;
         for (int i = 0; i < products.size(); i++) {
-            str = (products.get(i).getQuantity() > 0) ? "in stock" : "out of stock";
+            if (products.get(i).getQuantity() > 0) {
+                str = "in stock";
+            } else {
+                str = "out of stock";
+            }
+
             System.out.println("\n" + i +  ") " + products.get(i).showDetails() + "\nStatus: " + str);
         }
 
@@ -145,6 +208,7 @@ public class FlipApp {
     }
 
     private void openAdminWindow() {
+        System.out.println("Admin Role");
     }
 
     public void showErrorInvalidArgument() {

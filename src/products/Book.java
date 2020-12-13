@@ -80,6 +80,7 @@ public class Book implements Product {
         return publisher;
     }
 
+    @Override
     public int getQuantity() {
         return quantity;
     }

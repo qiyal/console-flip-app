@@ -46,4 +46,16 @@ public class UserDatabase {
     public boolean isAdmin(String login) {
         return (users.get(login) instanceof Admin);
     }
+
+    public void addUser(Admin admin) {
+        users.put(admin.getLogin(), admin);
+    }
+
+    public void addUser(Client client) {
+        users.put(client.getEmail(), client);
+    }
+
+    public User getUserByLogin(String login) {
+        return users.get(login);
+    }
 }

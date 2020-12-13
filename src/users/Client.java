@@ -1,12 +1,13 @@
 package users;
 
 
-import credit_card.CreditCard;
+import strategies.CreditCard;
 
 public class Client extends User {
-    public String email;
-    public String password;
-    public CreditCard creditCard;
+    private String email;
+    private String password;
+    private String phoneNumber;
+    private CreditCard creditCard;
 
     public Client() {}
 
@@ -21,6 +22,14 @@ public class Client extends User {
         this.email = email;
         this.password = password;
         this.creditCard = creditCard;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getEmail() {

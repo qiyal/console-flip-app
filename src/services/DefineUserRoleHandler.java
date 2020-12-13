@@ -10,8 +10,9 @@ public class DefineUserRoleHandler extends Handler {
     public boolean check(String login, String password) {
         if (userDatabase.isAdmin(login)) {
             authService.setRole(Role.ADMIN);
+        } else {
+            authService.setRole(Role.CLIENT);
         }
-        authService.setRole(Role.CLIENT);
 
         return checkNext(login, password);
     }
