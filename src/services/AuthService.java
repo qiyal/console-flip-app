@@ -27,6 +27,12 @@ public class AuthService {
         return false;
     }
 
+    public void logout() {
+        auth = false;
+        authUserLogin = null;
+        role = null;
+    }
+
     public boolean isAuth() {
         return auth;
     }

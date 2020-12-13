@@ -93,6 +93,10 @@ public class ProductDatabase {
         return books.size();
     }
 
+    public Product getProductById(int id) {
+        return books.getOrDefault(id, null);
+    }
+
     public void decrementQuantity(Product product) {
         if (product instanceof Book) {
             Book book = (Book)product;
