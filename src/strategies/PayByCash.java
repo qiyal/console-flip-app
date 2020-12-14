@@ -18,6 +18,7 @@ public class PayByCash implements PayStrategy {
     public boolean pay() {
         Order order = new Order(client.getEmail(), cost, new Date(), address);
         orderDatabase.addOrder(order);
+        System.out.println("Paying " + cost + "tg.");
         System.out.println("\nThanks for your purchase, expect delivery.");
         return true;
     }

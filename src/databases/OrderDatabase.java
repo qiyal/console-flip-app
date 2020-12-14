@@ -19,4 +19,8 @@ public class OrderDatabase {
     public void addOrder(Order order) {
         orders.add(order);
     }
+
+    public ArrayList<Order> getAllOrders() {
+        return orders;
+    }
 }

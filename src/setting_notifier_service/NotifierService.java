@@ -22,18 +22,24 @@ public class NotifierService {
     }
 
     public void notifier(String message, String email) {
-        Client client = (Client) userDatabase.getUserByLogin(authService.getAuthUserLogin());
+        Client client = (Client) userDatabase.getUserByLogin(email);
 
-        NotifierDecorator notifier = new NotifierDecorator();
+        if(client.getNotifiers().contains(NotifierEnum.EMAIL)) {
+            Notifier notifier = new EmailNotifier(client.getEmail());
 
-        if (client.getNotifiers().contains(NotifierEnum.EMAIL)) {
-            notifier = new NotifierDecorator(new EmailNotifier(client.getEmail()));
+            if (client.getNotifiers().contains(NotifierEnum.SMS)) {
+                notifier = new SMSDecorator(notifier, client.getPhoneNumber());
+            }
+
+            notifier.send(message);
         }
+        else {
+            NotifierDecorator notifierDecorator = new NotifierDecorator();
 
-        if (client.getNotifiers().contains(NotifierEnum.EMAIL)) {
-            notifier = new SMSDecorator(notifier, client.getPhoneNumber());
+            if (client.getNotifiers().contains(NotifierEnum.SMS)) {
+                notifierDecorator = new SMSDecorator(notifierDecorator, client.getPhoneNumber());
+            }
+            notifierDecorator.send(message);
         }
-
-        notifier.send(message);
     }
 }

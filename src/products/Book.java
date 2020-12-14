@@ -108,4 +108,12 @@ public class Book implements Product {
     public void setPart(int part) {
         this.part = part;
     }
+
+    public void setBookId(int bookId) {
+        this.bookId = bookId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

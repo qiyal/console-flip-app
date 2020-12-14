@@ -49,4 +49,11 @@ public class Order {
     public void setAddress(String address) {
         this.address = address;
     }
+
+    public void showInfo() {
+        System.out.println("Customer email: " + clientEmail);
+        System.out.println("cost: " + cost);
+        System.out.println("Date: " + data);
+        System.out.println("Address: " + address);
+    }
 }

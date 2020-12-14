@@ -3,6 +3,7 @@ package facades;
 import builders.ComicsBuilder;
 import builders.director.Director;
 import cart.Cart;
+import databases.OrderDatabase;
 import databases.ProductDatabase;
 import databases.UserDatabase;
 import decorators.NotifierEnum;
@@ -10,6 +11,9 @@ import listeners.EventManeger;
 import listeners.InStockListener;
 import listeners.NewEpisodeComics;
 import listeners.NewSalesListener;
+import orders.Order;
+import products.Book;
+import products.Comics;
 import products.Product;
 import services.AuthService;
 import services.Role;
@@ -17,6 +21,7 @@ import strategies.PayByCash;
 import strategies.PayByCreditCard;
 import strategies.PayByInstalments;
 import strategies.PayStrategy;
+import users.Admin;
 import users.Client;
 
 import java.util.ArrayList;
@@ -25,6 +30,7 @@ import java.util.Scanner;
 public class FlipApp {
     private UserDatabase userDatabase;
     private ProductDatabase productDatabase;
+    private OrderDatabase orderDatabase;
     private AuthService authService;
     private EventManeger eventManeger;
     private Cart cart;
@@ -35,6 +41,7 @@ public class FlipApp {
     private void initDatabases() {
         userDatabase = UserDatabase.getInstance();
         productDatabase = ProductDatabase.getInstance();
+        orderDatabase = OrderDatabase.getInstance();
     }
 
     private void initServices() {
@@ -59,6 +66,7 @@ public class FlipApp {
                     System.out.println("enter 2 - add new episode of comics or book");
                     System.out.println("enter 3 - do new party of product");
                     System.out.println("enter 4 - use builder");
+                    System.out.println("enter 5 - show orders");
                     System.out.println("enter -1 - SING OUT");
                     System.out.println("enter 0 - EXIT");
                     System.out.print("enter: ");
@@ -72,6 +80,12 @@ public class FlipApp {
                         addIncrementQuantity();
                     } else if (op == 4) {
                         useBilder();
+                    } else if (op == 5) {
+                        System.out.println();
+                        for (Order order : orderDatabase.getAllOrders()) {
+                            order.showInfo();
+                            System.out.println();
+                        }
                     }
                     else if (op == -1) {
                         authService.logout();
@@ -152,7 +166,11 @@ public class FlipApp {
 
         if (op == 1) {
             productDatabase.addProduct(director.buildFullmetalAlchemistComics(new ComicsBuilder()));
+            String messaga = productDatabase.getProductById(11).getName() + ". New Episode, already on sale!";
+            eventManeger.notifyUsers(Integer.toString(11), "new-episode", "");
         } else {
+            String messaga = productDatabase.getProductById(13).getName() + ". New Episode, already on sale!";
+            eventManeger.notifyUsers(Integer.toString(13), "new-episode", "");
             productDatabase.addProduct(director.buildMajorThunder(new ComicsBuilder()));
         }
         System.out.println("\nAdded!");
@@ -188,6 +206,20 @@ public class FlipApp {
         String messaga = products.get(chose).getName() + ". New Episode, already on sale!";
         String id = Integer.toString(products.get(chose).getId());
         eventManeger.notifyUsers(id, "new-episode", messaga);
+
+        if (products.get(chose) instanceof Comics) {
+            Comics newComics = (Comics) products.get(chose);
+            newComics.setComicsId(newComics.comicsId + 1);
+            newComics.setName(newComics.name + "New Episode");
+            productDatabase.addProduct(newComics);
+        } else {
+            Book book = (Book) products.get(chose);
+            book.setBookId(book.getId() + 1);
+            book.setName(book.getName() + "New Episode");
+            productDatabase.addProduct(book);
+        }
+
+
     }
 
     private void addNewSale() {
@@ -322,6 +354,10 @@ public class FlipApp {
         } else {
             Client client = (Client) userDatabase.getUserByLogin(authService.getAuthUserLogin());
             client.getNotifiers().add(NotifierEnum.SMS);
+            if(client.getPhoneNumber() == null) {
+                System.out.println("\nPhone Number: ");
+                client.setPhoneNumber(sc.next());
+            }
             userDatabase.addUser(client);
         }
 
@@ -375,27 +411,54 @@ public class FlipApp {
     }
 
     private void signUp() {
+        String login, password, firstName, lastName;
         System.out.println("\nenter 1 - Client");
         System.out.println("enter 2 - Admin");
         System.out.print("enter: ");
         op = sc.nextInt();
 
+        System.out.print("\nFirst Name: ");
+        firstName = sc.next();
+        System.out.print("Last Name: ");
+        lastName = sc.next();
+
         if (op == 1) {
+            while(true) {
+                System.out.print("Email: ");
+                login = sc.next();
 
+                if (userDatabase.hasLogin(login)) {
+                    System.out.println("input other email.");
+                } else {
+                    break;
+                }
+            }
+            System.out.print("Password: ");
+            password = sc.next();
+
+            userDatabase.addUser(new Client(firstName, lastName, login, password));
+            System.out.println("Created!");
         } else if (op == 2) {
+            while(true) {
+                System.out.print("Login: ");
+                login = sc.next();
 
+                if (userDatabase.hasLogin(login)) {
+                    System.out.println("input other login.");
+                } else {
+                    break;
+                }
+            }
+
+            System.out.print("Password: ");
+            password = sc.next();
+
+            userDatabase.addUser(new Admin(firstName, lastName, login, password));
         } else {
             showExitMessage();
         }
-    }
 
-    private void createClient() {
-        String firstName, lastname, email, password;
 
-        System.out.println("\nFirst Name: ");
-        firstName = sc.next();
-        System.out.println("\nLast Name: ");
-        lastname = sc.next();
     }
 
     private void signIn() {
