@@ -1,5 +1,7 @@
 package facades;
 
+import builders.ComicsBuilder;
+import builders.director.Director;
 import cart.Cart;
 import databases.ProductDatabase;
 import databases.UserDatabase;
@@ -30,16 +32,16 @@ public class FlipApp {
     private int chose;
     private Scanner sc;
 
-    public void initDatabases() {
+    private void initDatabases() {
         userDatabase = UserDatabase.getInstance();
         productDatabase = ProductDatabase.getInstance();
     }
 
-    public void initServices() {
+    private void initServices() {
         authService = AuthService.getInstance();
     }
 
-    public void initSystem() {
+    private void initSystem() {
         initDatabases();
         initServices();
         eventManeger = new EventManeger();
@@ -56,6 +58,7 @@ public class FlipApp {
                     System.out.println("\nenter 1 - add a new Sale");
                     System.out.println("enter 2 - add new episode of comics or book");
                     System.out.println("enter 3 - do new party of product");
+                    System.out.println("enter 4 - use builder");
                     System.out.println("enter -1 - SING OUT");
                     System.out.println("enter 0 - EXIT");
                     System.out.print("enter: ");
@@ -67,7 +70,10 @@ public class FlipApp {
                         addNewEpisode();
                     } else if (op == 3) {
                         addIncrementQuantity();
-                    } else if (op == -1) {
+                    } else if (op == 4) {
+                        useBilder();
+                    }
+                    else if (op == -1) {
                         authService.logout();
                     } else if (op == 0) {
                         showExitMessage();
@@ -135,6 +141,21 @@ public class FlipApp {
 
             }
         }
+    }
+
+    private void useBilder() {
+        Director director = new Director();
+        System.out.println("enter 1 - buildFullmetalAlchemistComics");
+        System.out.println("enter 2 - buildMajorThunder");
+        System.out.println("enter: ");
+        op = sc.nextInt();
+
+        if (op == 1) {
+            productDatabase.addProduct(director.buildFullmetalAlchemistComics(new ComicsBuilder()));
+        } else {
+            productDatabase.addProduct(director.buildMajorThunder(new ComicsBuilder()));
+        }
+        System.out.println("\nAdded!");
     }
 
     private void addIncrementQuantity() {
@@ -271,7 +292,7 @@ public class FlipApp {
 
     private void deleteNotifier() {
         System.out.println("\nenter 1 - add Email");
-        System.out.println("enter 2 - add Email");
+        System.out.println("enter 2 - add SMS");
         System.out.print("enter: ");
         op = sc.nextInt();
 
@@ -290,7 +311,7 @@ public class FlipApp {
 
     private void addNotifier() {
         System.out.println("\nenter 1 - add Email");
-        System.out.println("enter 2 - add Email");
+        System.out.println("enter 2 - add SMS");
         System.out.print("enter: ");
         op = sc.nextInt();
 
@@ -437,11 +458,11 @@ public class FlipApp {
         }
     }
 
-    public void showErrorInvalidArgument() {
+    private void showErrorInvalidArgument() {
         System.out.println("\nInvalid argument!");
     }
 
-    public void showExitMessage() {
+    private void showExitMessage() {
         System.out.println("\n--- EXIT APP ---");
     }
 }

@@ -1,5 +1,7 @@
 package products;
 
+import builders.ComicsBuilder;
+
 import java.util.Set;
 
 public class Comics implements Product {
@@ -26,6 +28,19 @@ public class Comics implements Product {
         this.idPart = idPart;
         this.part = part;
         this.urlImage = urlImage;
+    }
+
+    public Comics(ComicsBuilder builder) {
+        this.comicsId = builder.comicsId;
+        this.name = builder.name;
+        this.authorName = builder.authorName;
+        this.price = builder.price;
+        this.year = builder.year;
+        this.publisher = builder.publisher;
+        this.quantity = builder.quantity;
+        this.idPart = builder.idPart;
+        this.part = builder.part;
+        this.urlImage = builder.urlImage;
     }
 
 
